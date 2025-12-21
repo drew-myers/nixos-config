@@ -28,6 +28,13 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 10;
+    nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+  nix.settings.auto-optimise-store = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";
