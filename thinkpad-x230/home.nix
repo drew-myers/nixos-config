@@ -11,6 +11,7 @@
 
     neofetch
     nnn # terminal file manager
+    lazygit
 
     # archives
     zip
@@ -128,6 +129,7 @@
          vi = "hx";
          vim = "hx";
          nano = "hx";
+         lg = "lazygit";
        };
      };  
      carapace.enable = true;
