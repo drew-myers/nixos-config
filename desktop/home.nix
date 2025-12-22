@@ -161,5 +161,26 @@
   programs.mangohud = {
     enable = true;
   };
+
+  home.activation.configureKde = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    # 1. Disable Mouse Acceleration
+    # Sets the profile to "Flat" (raw input)
+    ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 --file kcminputrc --group Mouse --key AccelerationProfile "None"
+
+    # 2. Disable Top-Left Hot Corner
+    # Prevents accidental "Overview" triggering while gaming
+    ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 --file kwinrc --group ElectricBorders --key TopLeft "None"
+
+    # 3. Optimize Alt-Tab (Task Switcher)
+    # Disable "Show Selected Window" (The heavy live preview effect)
+    ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 --file kwinrc --group TabBox --key ShowSelectedWindow "false"
+    
+    # Disable background dimming/highlighting for faster rendering
+    ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 --file kwinrc --group TabBox --key HighlightWindows "false"
+    
+    # Switch style to "Large Icons" (internal name: 'informative')
+    ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 --file kwinrc --group TabBox --key LayoutName "informative"
+  '';
+
   home.stateVersion = "25.11";
 }
