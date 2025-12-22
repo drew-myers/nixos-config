@@ -54,6 +54,8 @@
     glow # markdown previewer in terminal
 
     btop  # replacement of htop/nmon
+
+    vesktop
   ];
 
   programs.ssh = {
