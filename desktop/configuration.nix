@@ -14,25 +14,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
-  # This prevents DHCP from prepending its own (broken) DNS servers
-  networking.dhcpcd.extraConfig = "nohook resolv.conf";
-  networking.networkmanager.dns = "none";
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # Game perf optimizations
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+  programs.gamemode.enable = true;
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable OpenGL
+  # Graphics setup
   hardware.graphics = {
     enable = true;
   };
-
-  # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
-
   hardware.nvidia = {
 
     # Modesetting is required.
@@ -57,12 +47,23 @@
     open = false;
 
     # Enable the Nvidia settings menu,
-	# accessible via `nvidia-settings`.
+	  # accessible via `nvidia-settings`.
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
+
+  networking.hostName = "nixos"; # Define your hostname.
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  # This prevents DHCP from prepending its own (broken) DNS servers
+  networking.dhcpcd.extraConfig = "nohook resolv.conf";
+  networking.networkmanager.dns = "none";
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -165,8 +166,6 @@
     dedicatedServer.openFirewall = true; # For Source Dedicated Server hosting
     # Other general flags if available can be set here.
   };
-  # Tip: For improved gaming performance, you can also enable GameMode:
-  #programs.gamemode.enable = true;
 
 
   # Some programs need SUID wrappers, can be configured further or are
