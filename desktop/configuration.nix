@@ -16,6 +16,7 @@
 
   # Game perf optimizations
   programs.gamemode.enable = true;
+  services.fstrim.enable = true;
 
   # Graphics setup
   hardware.graphics = {
