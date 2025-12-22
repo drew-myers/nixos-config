@@ -56,6 +56,7 @@
     btop  # replacement of htop/nmon
 
     vesktop
+    heroic
   ];
 
   programs.ssh = {
