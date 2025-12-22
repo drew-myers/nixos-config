@@ -158,6 +158,7 @@
     git
     wget
     appimage-run
+    protonup-qt
   ];
 
   programs.appimage = {
