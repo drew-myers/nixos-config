@@ -57,6 +57,7 @@
 
     vesktop
     heroic
+    goverlay
   ];
 
   programs.ssh = {
