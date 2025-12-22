@@ -198,6 +198,24 @@
     polkitPolicyOwners = [ "acmyers" ];
   };
 
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono # Great for terminal/coding
+    noto-fonts
+    noto-fonts-color-emoji
+    roboto
+  ];
+
+  # Better rendering settings
+  fonts.fontconfig = {
+    enable = true;
+    defaultFonts = {
+      monospace = [ "JetBrainsMono Nerd Font" ];
+      sansSerif = [ "Roboto" ];
+      serif = [ "Noto Serif" ];
+    };
+  };
+
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
