@@ -68,13 +68,13 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  boot.loader.systemd-boot.configurationLimit = 10;
-    nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
-  nix.settings.auto-optimise-store = true;
+  # Nixhelper
+  programs.nh = {
+    enable = true;
+    clean.enable = true;
+    clean.extraArgs = "--keep-since 4d --keep 3";
+    flake = "/home/acmyers/nixos-config/desktop"; # Adjust to where your flake is
+  };  
 
   # Set your time zone.
   time.timeZone = "America/New_York";
