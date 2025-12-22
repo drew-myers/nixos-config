@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   home.username = "acmyers";
@@ -73,6 +73,14 @@
         name = "Drew Myers";
         email = "drew@drewmyers.dev";
       };
+    };
+  };
+
+  programs.kitty = lib.mkForce {
+    enable = true;
+    themeFile = "Arthur";
+    settings = {
+      font_size = 10;
     };
   };
 
