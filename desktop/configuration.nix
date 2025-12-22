@@ -156,8 +156,13 @@
     helix
     git
     wget
+    appimage-run
   ];
 
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
   
   programs.steam = {
     enable = true; # Master switch, already covered in installation
