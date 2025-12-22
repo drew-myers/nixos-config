@@ -23,7 +23,6 @@
     ripgrep # recursively searches directories for a regex pattern
     jq # A lightweight and flexible command-line JSON processor
     yq-go # yaml processor https://github.com/mikefarah/yq
-    eza # A modern replacement for ‘ls’
     fzf # A command-line fuzzy finder
 
     # networking tools
@@ -94,34 +93,33 @@
     nushell = {
         enable = true;
 
-        # The config.nu can be anywhere you want if you like to edit your Nushell with Nu
-        # configFile.source = /home/acmyers/.config/nushell/config.nu;
-        # for editing directly to config.nu 
-         
         extraConfig = ''
          let carapace_completer = {|spans|
          carapace $spans.0 nushell ...$spans | from json
          }
          $env.config = {
-          show_banner: false,
-          completions: {
-          case_sensitive: false # case-sensitive completions
-          quick: true    # set to false to prevent auto-selecting completions
-          partial: true    # set to false to prevent partial filling of the prompt
-          algorithm: "fuzzy"    # prefix or fuzzy
-          external: {
-          # set to false to prevent nushell looking into $env.PATH to find more suggestions
-              enable: true 
-          # set to lower can improve completion performance at the cost of omitting some options
-              max_results: 100 
-              completer: $carapace_completer # check 'carapace_completer' 
-            }
-          }
+           show_banner: false,
+           edit_mode: "vi",
+           buffer_editor: "vi",
+           completions: {
+             case_sensitive: false # case-sensitive completions
+             quick: true    # set to false to prevent auto-selecting completions
+             partial: true    # set to false to prevent partial filling of the prompt
+             algorithm: "fuzzy"    # prefix or fuzzy
+             external: {
+               # set to false to prevent nushell looking into $env.PATH to find more suggestions
+               enable: true 
+               # set to lower can improve completion performance at the cost of omitting some options
+               max_results: 100 
+               completer: $carapace_completer # check 'carapace_completer' 
+             }
+           }
          } 
          $env.PATH = ($env.PATH | 
          split row (char esep) |
-         prepend /home/myuser/.apps |
-         append /usr/bin/env
+         prepend /home/acmyers/.apps |
+         append /usr/bin/env |
+         append /home/acmyers/bin
          )
          '';
 
@@ -130,6 +128,7 @@
          vim = "hx";
          nano = "hx";
          lg = "lazygit";
+         nrs = "sudo nixos-rebuild switch";
        };
      };  
      carapace.enable = true;
