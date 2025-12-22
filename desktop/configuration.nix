@@ -15,7 +15,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Game perf optimizations
-  boot.kernelPackages = pkgs.linuxPackages_zen;
   programs.gamemode.enable = true;
 
   # Graphics setup
