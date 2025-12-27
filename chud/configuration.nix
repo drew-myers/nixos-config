@@ -14,6 +14,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Force text-only mode for the boot console.
+  # Required for older Lenovo hardware to prevent KMS freeze.
+  boot.kernelParams = [ "nomodeset" ];
+
   networking.hostName = "chud"; # Define your hostname.
 
   # Configure network connections interactively with nmcli or nmtui.
