@@ -35,6 +35,7 @@
     git
     helix
     wget
+    git-crypt
   ];
 
   programs._1password.enable = true;
