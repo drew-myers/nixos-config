@@ -51,6 +51,17 @@
     ];
   };
 
+  # Disable the standard GC in favor of nh
+  nix.gc.automatic = false;
+  programs.nh = {
+    enable = true;
+    clean = {
+      enable = true;
+      extraArgs = "--keep-since 30d --keep 4";
+    };
+    flake = "/etc/nixos";
+  };
+
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
