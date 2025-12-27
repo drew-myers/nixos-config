@@ -22,6 +22,13 @@
   # Set your time zone.
   time.timeZone = "America/New_York";
 
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+
+    trusted-users = [ "root" "@wheel" ];
+  };
+  security.sudo.wheelNeedsPassword = false;
+
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
@@ -50,6 +57,7 @@
   #   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #   wget
       helix
+      git
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
