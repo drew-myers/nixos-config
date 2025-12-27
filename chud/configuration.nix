@@ -14,9 +14,11 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Force text-only mode for the boot console.
-  # Required for older Lenovo hardware to prevent KMS freeze.
-  boot.kernelParams = [ "nomodeset" ];
+  # Load Intel GPU drivers as early as possible (in the initrd).
+  # This prevents the boot hang on this specific hardware
+  boot.initrd.kernelModules = [ "i915" ];
+  # blacklist wifi module, fixes tty errors
+  boot.blacklistedKernelModules = [ "rtw88_8821ce" ];
 
   networking.hostName = "chud"; # Define your hostname.
 
@@ -32,9 +34,6 @@
     trusted-users = [ "root" "@wheel" ];
   };
   security.sudo.wheelNeedsPassword = false;
-
-  # blacklist wifi module
-  boot.blacklistedKernelModules = [ "rtw88_8821ce" ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
