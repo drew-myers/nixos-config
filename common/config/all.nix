@@ -11,6 +11,13 @@
     clean.extraArgs = "--keep-since 4d --keep 3";
   };  
 
+
+  users.users.acmyers = {
+    isNormalUser = true;
+    description = "Drew Myers";
+    extraGroups = [ "networkmanager" "wheel" ];
+  };
+
   # Set your time zone.
   time.timeZone = "America/New_York";
 
