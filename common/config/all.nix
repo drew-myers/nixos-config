@@ -3,7 +3,12 @@
   config,
   pkgs,
   ...
-}: {
+}:
+
+let
+  common-secrets = import ../secrets.nix;
+in
+{
   # Nixhelper
   programs.nh = {
     enable = true;
@@ -14,6 +19,7 @@
 
   users.users.acmyers = {
     isNormalUser = true;
+    hashedPassword = common-secrets.acmyers-pw;
     description = "Drew Myers";
     extraGroups = [ "networkmanager" "wheel" ];
   };
