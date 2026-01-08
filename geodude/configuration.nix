@@ -5,19 +5,16 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+    ./router.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "geodude"; # Define your hostname.
-
-  # Configure network connections interactively with nmcli or nmtui.
-  networking.networkmanager.enable = true;
+  networking.hostName = "geodude";
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -27,6 +24,13 @@
 
     trusted-users = [ "root" "@wheel" ];
   };
+
+  # Allow unfree packages (UniFi controller + MongoDB dependency)
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "unifi-controller"
+      "mongodb"
+    ];
   security.sudo.wheelNeedsPassword = false;
 
   # blacklist wifi module
