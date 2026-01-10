@@ -10,7 +10,8 @@ let
   lanPrefixLength = 24;
   dhcpRangeStart = "192.168.1.100";
   dhcpRangeEnd = "192.168.1.250";
-  upstreamDns = [ "1.1.1.1" "8.8.8.8" ];
+  # AdGuard will handle upstream DNS with DoH
+  adguardPort = 3000;  # Web UI port
 in
 {
   # Enable IP forwarding
@@ -43,15 +44,14 @@ in
     };
   };
 
-  # DHCP + DNS server
+  # DHCP server + local DNS (dnsmasq on port 5353, AdGuard on 53)
   services.dnsmasq = {
     enable = true;
     settings = {
-      server = upstreamDns;
+      port = 5353;  # AdGuard handles port 53
       domain-needed = true;
       bogus-priv = true;
       no-resolv = true;
-      cache-size = 1000;
       interface = lanInterface;
       bind-interfaces = true;
       dhcp-range = [ "${dhcpRangeStart},${dhcpRangeEnd},24h" ];
@@ -63,6 +63,44 @@ in
       local = "/lan/";
       domain = "lan";
       expand-hosts = true;
+
+      # Static DHCP reservations + local DNS
+      dhcp-host = [
+        "e8:ff:1e:d2:1a:dd,192.168.1.10,bugman"
+      ];
+    };
+  };
+
+  # AdGuard Home - DNS ad blocking with DoH upstream
+  services.adguardhome = {
+    enable = true;
+    mutableSettings = false;
+    settings = {
+      http = {
+        address = "${lanAddress}:${toString adguardPort}";
+      };
+      dns = {
+        bind_hosts = [ "127.0.0.1" lanAddress ];
+        port = 53;
+        upstream_dns = [
+          # DNS-over-HTTPS upstreams (encrypted)
+          "https://dns.cloudflare.com/dns-query"
+          "https://dns.quad9.net/dns-query"
+          # Forward .lan to local dnsmasq
+          "[/lan/]127.0.0.1:5353"
+        ];
+        bootstrap_dns = [ "1.1.1.1" "9.9.9.9" ];
+        enable_dnssec = true;
+      };
+      filtering = {
+        enabled = true;
+        rewrites = [];
+      };
+      filters = [
+        { enabled = true; url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt"; name = "AdGuard DNS filter"; id = 1; }
+        { enabled = true; url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"; name = "AdAway Default Blocklist"; id = 2; }
+      ];
+      user_rules = [];
     };
   };
 
@@ -71,6 +109,7 @@ in
     enable = true;
     trustedInterfaces = [ lanInterface ];
     allowPing = true;
+    allowedTCPPorts = [ adguardPort ];  # AdGuard web UI
   };
 
   # NAT masquerade
