@@ -12,11 +12,8 @@
   boot.loader.grub.device = "/dev/sda";
   boot.loader.grub.useOSProber = true;
 
-  # workaround dns issue until new router is setup
   networking.hostName = "nixos"; # Define your hostname.
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
-  networking.dhcpcd.extraConfig = "nohook resolv.conf";
-  networking.networkmanager.dns = "none";
+  networking.nameservers = [ "192.168.1.1" "1.1.1.1" "8.8.8.8" ];
 
   # Enable networking
   networking.networkmanager.enable = true;

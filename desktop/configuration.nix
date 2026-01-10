@@ -57,10 +57,7 @@
   };
 
   networking.hostName = "nixos"; # Define your hostname.
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
-  # This prevents DHCP from prepending its own (broken) DNS servers
-  networking.dhcpcd.extraConfig = "nohook resolv.conf";
-  networking.networkmanager.dns = "none";
+  networking.nameservers = [ "192.168.1.1" "1.1.1.1" "8.8.8.8" ];
 
   # Enable networking
   networking.networkmanager.enable = true;
