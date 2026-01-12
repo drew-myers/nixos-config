@@ -8,6 +8,7 @@
   imports = [
     ./hardware-configuration.nix
     ./router.nix
+    ./monitoring.nix
   ];
 
   # Use the systemd-boot EFI boot loader.
