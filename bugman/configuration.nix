@@ -15,6 +15,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Enable Intel Quick Sync for hardware transcoding
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-media-driver      # iHD driver for N100
+      intel-compute-runtime   # OpenCL for HDR tone mapping
+    ];
+  };
+
   networking.hostName = "bugman"; # Define your hostname.
 
   # Configure network connections interactively with nmcli or nmtui.
