@@ -64,9 +64,15 @@ in
       domain = "lan";
       expand-hosts = true;
 
-      # Static DHCP reservations + local DNS
+      # Static DHCP reservations
       dhcp-host = [
         "e8:ff:1e:d2:1a:dd,192.168.1.10,bugman"
+      ];
+
+      # Static DNS records (for hosts with static IPs, not via DHCP)
+      host-record = [
+        "geodude.lan,192.168.1.1"
+        "geodude,192.168.1.1"
       ];
     };
   };
