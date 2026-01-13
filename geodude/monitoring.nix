@@ -15,9 +15,11 @@ let
   ];
 
   # HTTP targets - DoH endpoints used by AdGuard Home
+  # Base64url encoded DNS query for "google.com" (A record)
+  dohQuery = "?dns=AAABAAABAAAAAAAABmdvb2dsZQNjb20AAAEAAQ";
   httpTargets = [
-    "https://dns.cloudflare.com/dns-query"
-    "https://dns.quad9.net/dns-query"
+    "https://dns.cloudflare.com/dns-query${dohQuery}"
+    "https://dns.quad9.net/dns-query${dohQuery}"
   ];
 in
 {
@@ -82,6 +84,8 @@ in
           {
             source_labels = [ "__param_target" ];
             target_label = "instance";
+            regex = "([^?]*).*";
+            replacement = "$1";
           }
           {
             target_label = "__address__";

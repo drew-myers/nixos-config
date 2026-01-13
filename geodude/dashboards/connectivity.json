@@ -348,9 +348,7 @@
           "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
           "unit": "binBps"
         },
-        "overrides": [
-          { "matcher": { "id": "byRegexp", "options": ".*TX.*" }, "properties": [{ "id": "custom.transform", "value": "negative-Y" }] }
-        ]
+        "overrides": []
       },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 39 },
       "id": 41,
