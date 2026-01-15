@@ -7,6 +7,7 @@
   ];
 
   home.packages = with pkgs; [
+    opencode
     gemini-cli
     claude-code
   ];
