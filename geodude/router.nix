@@ -153,8 +153,11 @@ in
           # DNS-over-HTTPS upstreams (encrypted)
           "https://dns.cloudflare.com/dns-query"
           "https://dns.quad9.net/dns-query"
-          # Forward .lan to local dnsmasq
+          # Forward local zones to dnsmasq
           "[/lan/]127.0.0.1:5353"
+          "[/1.168.192.in-addr.arpa/]127.0.0.1:5353"
+          "[/10.168.192.in-addr.arpa/]127.0.0.1:5353"
+          "[/20.168.192.in-addr.arpa/]127.0.0.1:5353"
         ];
         bootstrap_dns = [ "1.1.1.1" "9.9.9.9" ];
         enable_dnssec = true;
