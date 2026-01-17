@@ -315,6 +315,12 @@
       "type": "row"
     },
     {
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 46 },
+      "id": 106,
+      "title": "VLAN Interface Stats",
+      "type": "row"
+    },
+    {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -365,6 +371,50 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 47 },
+      "id": 43,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_receive_bytes_total{device=\"vlan10\"}[1m])", "legendFormat": "Guest VLAN RX", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_transmit_bytes_total{device=\"vlan10\"}[1m])", "legendFormat": "Guest VLAN TX", "refId": "B" }
+      ],
+      "title": "Guest VLAN Interface Throughput (vlan10)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 47 },
+      "id": 44,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_receive_bytes_total{device=\"vlan20\"}[1m])", "legendFormat": "IoT VLAN RX", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_transmit_bytes_total{device=\"vlan20\"}[1m])", "legendFormat": "IoT VLAN TX", "refId": "B" }
+      ],
+      "title": "IoT VLAN Interface Throughput (vlan20)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
           "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "auto", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
           "mappings": [],
           "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 10 }] },
@@ -372,14 +422,14 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 47 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 55 },
       "id": 42,
       "options": { "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_receive_errs_total{device=~\"enp.*\"}[5m])", "legendFormat": "{{device}} RX Errors", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_transmit_errs_total{device=~\"enp.*\"}[5m])", "legendFormat": "{{device}} TX Errors", "refId": "B" },
-        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_receive_drop_total{device=~\"enp.*\"}[5m])", "legendFormat": "{{device}} RX Dropped", "refId": "C" },
-        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_transmit_drop_total{device=~\"enp.*\"}[5m])", "legendFormat": "{{device}} TX Dropped", "refId": "D" }
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_receive_errs_total{device=~\"enp.*|vlan.*\"}[5m])", "legendFormat": "{{device}} RX Errors", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_transmit_errs_total{device=~\"enp.*|vlan.*\"}[5m])", "legendFormat": "{{device}} TX Errors", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_receive_drop_total{device=~\"enp.*|vlan.*\"}[5m])", "legendFormat": "{{device}} RX Dropped", "refId": "C" },
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" }, "expr": "rate(node_network_transmit_drop_total{device=~\"enp.*|vlan.*\"}[5m])", "legendFormat": "{{device}} TX Dropped", "refId": "D" }
       ],
       "title": "Network Errors & Dropped Packets",
       "type": "timeseries"
@@ -412,6 +462,6 @@
   "timezone": "browser",
   "title": "Internet Connectivity",
   "uid": "internet-connectivity",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
