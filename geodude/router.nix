@@ -1,17 +1,30 @@
 { config, lib, pkgs, ... }:
 
 let
-  # TESTING CONFIG: enp2s0=WAN (existing network), enp1s0=LAN (new 192.168.1.x)
-  # PRODUCTION: swap these when going live
   wanInterface = "enp2s0";
   lanInterface = "enp1s0";
 
+  # Main LAN (untagged)
   lanAddress = "192.168.1.1";
   lanPrefixLength = 24;
   dhcpRangeStart = "192.168.1.100";
   dhcpRangeEnd = "192.168.1.250";
-  # AdGuard will handle upstream DNS with DoH
-  adguardPort = 3000;  # Web UI port
+
+  # Guest VLAN
+  guestVlan = 10;
+  guestInterface = "vlan${toString guestVlan}";
+  guestAddress = "192.168.10.1";
+  guestDhcpStart = "192.168.10.100";
+  guestDhcpEnd = "192.168.10.250";
+
+  # IoT VLAN
+  iotVlan = 20;
+  iotInterface = "vlan${toString iotVlan}";
+  iotAddress = "192.168.20.1";
+  iotDhcpStart = "192.168.20.100";
+  iotDhcpEnd = "192.168.20.250";
+
+  adguardPort = 3000;
 in
 {
   # Enable IP forwarding
@@ -27,6 +40,16 @@ in
   systemd.network = {
     enable = true;
 
+    # VLAN netdevs
+    netdevs."10-guest" = {
+      netdevConfig = { Kind = "vlan"; Name = guestInterface; };
+      vlanConfig.Id = guestVlan;
+    };
+    netdevs."10-iot" = {
+      netdevConfig = { Kind = "vlan"; Name = iotInterface; };
+      vlanConfig.Id = iotVlan;
+    };
+
     # WAN - DHCP from ISP
     networks."10-wan" = {
       matchConfig.Name = wanInterface;
@@ -35,10 +58,27 @@ in
       linkConfig.RequiredForOnline = "routable";
     };
 
-    # LAN - Static IP
+    # LAN - Static IP + VLANs attached
     networks."20-lan" = {
       matchConfig.Name = lanInterface;
       address = [ "${lanAddress}/${toString lanPrefixLength}" ];
+      vlan = [ guestInterface iotInterface ];
+      networkConfig.ConfigureWithoutCarrier = true;
+      linkConfig.RequiredForOnline = "no";
+    };
+
+    # Guest VLAN
+    networks."30-guest" = {
+      matchConfig.Name = guestInterface;
+      address = [ "${guestAddress}/24" ];
+      networkConfig.ConfigureWithoutCarrier = true;
+      linkConfig.RequiredForOnline = "no";
+    };
+
+    # IoT VLAN
+    networks."30-iot" = {
+      matchConfig.Name = iotInterface;
+      address = [ "${iotAddress}/24" ];
       networkConfig.ConfigureWithoutCarrier = true;
       linkConfig.RequiredForOnline = "no";
     };
@@ -52,13 +92,34 @@ in
       domain-needed = true;
       bogus-priv = true;
       no-resolv = true;
-      interface = lanInterface;
-      bind-interfaces = true;
-      dhcp-range = [ "${dhcpRangeStart},${dhcpRangeEnd},24h" ];
-      dhcp-option = [
-        "option:router,${lanAddress}"
-        "option:dns-server,${lanAddress}"
+      
+      # FIX: Listen on specific interfaces but do NOT bind tightly (prevents startup race)
+      # Must include "lo" so AdGuard can talk to it on 127.0.0.1
+      interface = [ "lo" lanInterface guestInterface iotInterface ];
+      bind-interfaces = false; 
+
+      # DHCP ranges per network using TAGS
+      dhcp-range = [
+        "set:lan,${dhcpRangeStart},${dhcpRangeEnd},24h"
+        "set:guest,${guestDhcpStart},${guestDhcpEnd},1h"
+        "set:iot,${iotDhcpStart},${iotDhcpEnd},24h"
       ];
+
+      # Explicit DHCP options per tag to ensure correct gateway/DNS
+      dhcp-option = [
+        # LAN
+        "tag:lan,option:router,${lanAddress}"
+        "tag:lan,option:dns-server,${lanAddress}"
+        
+        # Guest
+        "tag:guest,option:router,${guestAddress}"
+        "tag:guest,option:dns-server,${guestAddress}"
+        
+        # IoT
+        "tag:iot,option:router,${iotAddress}"
+        "tag:iot,option:dns-server,${iotAddress}"
+      ];
+
       dhcp-authoritative = true;
       local = "/lan/";
       domain = "lan";
@@ -69,7 +130,7 @@ in
         "e8:ff:1e:d2:1a:dd,192.168.1.10,bugman"
       ];
 
-      # Static DNS records (for hosts with static IPs, not via DHCP)
+      # Static DNS records
       host-record = [
         "geodude.lan,192.168.1.1"
         "geodude,192.168.1.1"
@@ -86,7 +147,7 @@ in
         address = "${lanAddress}:${toString adguardPort}";
       };
       dns = {
-        bind_hosts = [ "127.0.0.1" lanAddress ];
+        bind_hosts = [ "127.0.0.1" lanAddress guestAddress iotAddress ];
         port = 53;
         upstream_dns = [
           # DNS-over-HTTPS upstreams (encrypted)
@@ -106,19 +167,34 @@ in
         { enabled = true; url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt"; name = "AdGuard DNS filter"; id = 1; }
         { enabled = true; url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"; name = "AdAway Default Blocklist"; id = 2; }
       ];
-      user_rules = [];
+      user_rules = [
+        "@@||anthropic.com^"
+        "@@||datadoghq.com^"
+      ];
     };
   };
 
-  # Firewall - trust LAN, block WAN
+  # Firewall - trust LAN, limited trust for VLANs
   networking.firewall = {
     enable = true;
     trustedInterfaces = [ lanInterface ];
     allowPing = true;
     allowedTCPPorts = [ adguardPort ];  # AdGuard web UI
+    
+    # Explicitly allow DHCP and DNS on VLAN interfaces (since they are not trusted)
+    interfaces = {
+      "${guestInterface}" = {
+        allowedUDPPorts = [ 53 67 ];
+        allowedTCPPorts = [ 53 ];
+      };
+      "${iotInterface}" = {
+        allowedUDPPorts = [ 53 67 ];
+        allowedTCPPorts = [ 53 ];
+      };
+    };
   };
 
-  # NAT masquerade
+  # NAT + VLAN isolation
   networking.nftables = {
     enable = true;
     ruleset = ''
@@ -128,13 +204,41 @@ in
           oifname "${wanInterface}" masquerade
         }
       }
+
+      table ip filter {
+        chain forward {
+          type filter hook forward priority filter; policy drop;
+
+          # Allow established/related connections
+          ct state established,related accept
+
+          # Main LAN can go anywhere
+          iifname "${lanInterface}" accept
+
+          # Guest can only reach internet (WAN), not other networks
+          iifname "${guestInterface}" oifname "${wanInterface}" accept
+
+          # IoT can reach internet
+          iifname "${iotInterface}" oifname "${wanInterface}" accept
+
+          # Main LAN can initiate to IoT (for controlling devices)
+          iifname "${lanInterface}" oifname "${iotInterface}" accept
+        }
+      }
     '';
   };
 
-  # UniFi Controller for managing Ubiquiti APs
+  # UniFi Controller
   services.unifi = {
     enable = true;
     unifiPackage = pkgs.unifi;
     openFirewall = true;
+  };
+
+  # mDNS Reflector (Avahi) - Allows AirPrint/Chromecast across VLANs
+  services.avahi = {
+    enable = true;
+    allowInterfaces = [ lanInterface guestInterface iotInterface ];
+    reflector = true;
   };
 }
