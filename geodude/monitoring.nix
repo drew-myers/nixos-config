@@ -7,11 +7,11 @@ let
 
   # ICMP ping targets for connectivity monitoring
   icmpTargets = [
+    "71.72.96.1"        # ISP gateway (first hop)
+    "142.254.148.89"    # ISP DHCP server (second hop)
     "1.1.1.1"           # Cloudflare DNS (AdGuard bootstrap)
     "9.9.9.9"           # Quad9 DNS (AdGuard bootstrap)
     "8.8.8.8"           # Google DNS (general internet check)
-    # TODO: Replace with your ISP gateway IP (run: ip route | grep default)
-    # "ISP_GATEWAY_IP"
   ];
 
   # HTTP targets - DoH endpoints used by AdGuard Home
