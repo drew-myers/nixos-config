@@ -145,6 +145,16 @@ in
   };
 
   # ==========================================================================
+  # ntopng - Network traffic usage monitor (Flows/Protocols/Domains)
+  # ==========================================================================
+  services.ntopng = {
+    enable = true;
+    httpPort = 3001;
+    # Limit visibility to internal interfaces
+    interfaces = [ "enp2s0" "enp1s0" "vlan10" "vlan20" ];
+  };
+
+  # ==========================================================================
   # Grafana - Visualization and dashboards
   # ==========================================================================
   services.grafana = {
@@ -157,10 +167,10 @@ in
       };
       # Anonymous auth enabled - LAN-only access is sufficient security
       "auth.anonymous" = {
-        enabled = true;
-        org_role = "Admin";
+        enabled = false;
+        # default_role = "Admin"; # Remove or comment out this line
       };
-      auth.disable_login_form = true;
+      auth.disable_login_form = false;
       # Disable analytics/telemetry
       analytics.reporting_enabled = false;
       analytics.check_for_updates = false;
@@ -189,9 +199,4 @@ in
 
   # Dashboard JSON file
   environment.etc."grafana/dashboards/connectivity.json".source = ./dashboards/connectivity.json;
-
-  # ==========================================================================
-  # Firewall - Allow Grafana access from LAN
-  # ==========================================================================
-  networking.firewall.allowedTCPPorts = [ grafanaPort ];
 }

@@ -97,6 +97,7 @@
       PermitRootLogin = "no";
       PasswordAuthentication = false;
     };
+    openFirewall = false;
   };
 
   # Open ports in the firewall.

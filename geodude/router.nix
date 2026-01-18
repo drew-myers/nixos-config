@@ -27,8 +27,14 @@ let
   adguardPort = 3000;
 in
 {
-  # Enable IP forwarding
-  boot.kernel.sysctl."net.ipv4.conf.all.forwarding" = true;
+  # Enable IP forwarding and kernel hardening
+  boot.kernel.sysctl = {
+    "net.ipv4.conf.all.forwarding" = true;
+    "net.ipv4.conf.all.rp_filter" = 1;       # Enable strict reverse path filtering (prevents IP spoofing)
+    "net.ipv4.conf.default.rp_filter" = 1;
+    "net.ipv4.conf.all.send_redirects" = 0;  # Disable sending ICMP redirects
+    "net.ipv4.conf.default.send_redirects" = 0;
+  };
 
   # Disable NetworkManager, use systemd-networkd
   networking = {
@@ -50,10 +56,14 @@ in
       vlanConfig.Id = iotVlan;
     };
 
-    # WAN - DHCP from ISP
+    # WAN - DHCP from ISP (IPv6 disabled)
     networks."10-wan" = {
       matchConfig.Name = wanInterface;
-      networkConfig.DHCP = "ipv4";
+      networkConfig = {
+        DHCP = "ipv4";
+        IPv6AcceptRA = false;
+        LinkLocalAddressing = "ipv4";
+      };
       dhcpV4Config.UseDNS = false;
       linkConfig.RequiredForOnline = "routable";
     };
@@ -182,7 +192,6 @@ in
     enable = true;
     trustedInterfaces = [ lanInterface ];
     allowPing = true;
-    allowedTCPPorts = [ adguardPort ];  # AdGuard web UI
     
     # Explicitly allow DHCP and DNS on VLAN interfaces (since they are not trusted)
     interfaces = {
@@ -208,7 +217,38 @@ in
         }
       }
 
-      table ip filter {
+      table inet filter {
+        chain input {
+          type filter hook input priority filter; policy drop;
+
+          # Allow trusted interfaces (Loopback, LAN)
+          iifname "lo" accept
+          iifname "${lanInterface}" accept
+          
+          # Allow established/related connections (Replies to traffic we started)
+          ct state vmap { invalid : drop, established : accept, related : accept }
+
+          # Jump to allow list for other interfaces
+          jump input-allow
+        }
+
+        chain input-allow {
+          # Management Ports - ONLY from LAN (Redundant due to 'iifname ${lanInterface} accept' above, but safe)
+          # We do NOT allow these from WAN, Guest, or IoT
+
+          # DNS & DHCP (Guests/IoT)
+          iifname "${guestInterface}" udp dport { 53, 67 } accept
+          iifname "${iotInterface}" udp dport { 53, 67 } accept
+          iifname "${guestInterface}" tcp dport 53 accept
+          iifname "${iotInterface}" tcp dport 53 accept
+
+          # Allow Ping
+          icmp type echo-request accept
+          
+          # Allow DHCPv6 client (from ISP)
+          ip6 daddr fe80::/64 udp dport 546 accept
+        }
+
         chain forward {
           type filter hook forward priority filter; policy drop;
 
@@ -235,7 +275,7 @@ in
   services.unifi = {
     enable = true;
     unifiPackage = pkgs.unifi;
-    openFirewall = true;
+    openFirewall = false;
   };
 
   # mDNS Reflector (Avahi) - Allows AirPrint/Chromecast across VLANs
