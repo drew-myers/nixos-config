@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -6,6 +6,10 @@
     ../common/config/all.nix
     ../common/config/pc.nix
   ];
+
+  # Enable Niri and disable KDE Plasma
+  services.desktopManager.plasma6.enable = lib.mkForce false;
+  programs.niri.enable = true;
 
   nixpkgs.overlays = [
     (final: prev: {

@@ -1,0 +1,88 @@
+// Niri Configuration File
+// Managed by NixOS - do not edit manually if you want changes to persist
+
+spawn-at-startup "waybar"
+spawn-at-startup "mako"
+spawn-at-startup "nm-applet"
+spawn-at-startup "swaybg" "-c" "#1e1e2e" // Dark blue-grey background
+spawn-at-startup "lxpolkit" // Or polkit-gnome-authentication-agent-1
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+            options "caps:escape"
+        }
+    }
+    touchpad {
+        tap
+        natural-scroll
+        dwt
+    }
+    mouse {
+        accel-profile "flat"
+    }
+}
+
+layout {
+    gaps 16
+    center-focused-column "never"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+
+    focus-ring {
+        width 4
+        active-color "#7fc8ff"
+        inactive-color "#505050"
+    }
+}
+
+binds {
+    // -- Application Launchers --
+    Mod+T { spawn "alacritty"; }
+    Mod+D { spawn "fuzzel"; }
+    Mod+Ctrl+L { spawn "swaylock"; }
+
+    // -- Window Management --
+    Mod+Q { close-window; }
+    
+    Mod+H  { focus-column-left; }
+    Mod+L { focus-column-right; }
+    Mod+J  { focus-window-down; }
+    Mod+K    { focus-window-up; }
+
+    Mod+Shift+H  { move-column-left; }
+    Mod+Shift+L { move-column-right; }
+    Mod+Shift+J  { move-window-down; }
+    Mod+Shift+K    { move-window-up; }
+
+    Mod+Home { focus-column-first; }
+    Mod+End  { focus-column-last; }
+
+    Mod+C { center-column; }
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+
+    // -- Media Controls --
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "pamixer" "-i" "5"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "pamixer" "-d" "5"; }
+    XF86AudioMute        allow-when-locked=true { spawn "pamixer" "-t"; }
+    
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "s" "+10%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "s" "10%-"; }
+
+    // -- Screenshots --
+    Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
+    Ctrl+Print { spawn "sh" "-c" "grim - | wl-copy"; }
+
+    // -- System --
+    Mod+Shift+E { quit; }
+    Mod+Shift+P { power-off-monitors; }
+    Mod+Shift+Slash { show-hotkey-overlay; }
+}

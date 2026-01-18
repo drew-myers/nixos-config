@@ -46,4 +46,6 @@
   programs.firefox.enable = true;
 
   services.xserver.xkb.options = "caps:escape";
+
+  users.users.acmyers.shell = pkgs.nushell;
 }
