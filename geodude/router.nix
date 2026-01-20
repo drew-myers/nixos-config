@@ -94,11 +94,11 @@ in
     };
   };
 
-  # DHCP server + local DNS (dnsmasq on port 5353, AdGuard on 53)
+  # DHCP server + local DNS (dnsmasq on port 5354, AdGuard on 53)
   services.dnsmasq = {
     enable = true;
     settings = {
-      port = 5353;  # AdGuard handles port 53
+      port = 5354;  # AdGuard handles port 53, mDNS uses 5353
       domain-needed = true;
       bogus-priv = true;
       no-resolv = true;
@@ -164,10 +164,10 @@ in
           "https://dns.cloudflare.com/dns-query"
           "https://dns.quad9.net/dns-query"
           # Forward local zones to dnsmasq
-          "[/lan/]127.0.0.1:5353"
-          "[/1.168.192.in-addr.arpa/]127.0.0.1:5353"
-          "[/10.168.192.in-addr.arpa/]127.0.0.1:5353"
-          "[/20.168.192.in-addr.arpa/]127.0.0.1:5353"
+          "[/lan/]127.0.0.1:5354"
+          "[/1.168.192.in-addr.arpa/]127.0.0.1:5354"
+          "[/10.168.192.in-addr.arpa/]127.0.0.1:5354"
+          "[/20.168.192.in-addr.arpa/]127.0.0.1:5354"
         ];
         bootstrap_dns = [ "1.1.1.1" "9.9.9.9" ];
         enable_dnssec = true;
@@ -241,6 +241,10 @@ in
           iifname "${iotInterface}" udp dport { 53, 67 } accept
           iifname "${guestInterface}" tcp dport 53 accept
           iifname "${iotInterface}" tcp dport 53 accept
+
+          # mDNS (Avahi) - Allow discovery from VLANs
+          iifname "${guestInterface}" udp dport 5353 accept
+          iifname "${iotInterface}" udp dport 5353 accept
 
           # Allow Ping
           icmp type echo-request accept
