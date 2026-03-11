@@ -59,7 +59,7 @@
 
   programs.tmux = {
     enable = true;
-    prefix = "C-a";
+    prefix = "C-w";
     baseIndex = 1;
     escapeTime = 0;
     keyMode = "vi";
