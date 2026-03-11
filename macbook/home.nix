@@ -35,6 +35,9 @@
     gnupg
     nix-output-monitor
     btop
+    colima
+    docker-client
+    docker-compose
   ];
 
   programs.ssh = {
@@ -182,6 +185,21 @@
       };
     };
   };
+
+  # Colima default VM profile
+  home.file.".colima/default/colima.yaml".text = ''
+    cpu: 8
+    memory: 16
+    disk: 60
+    runtime: docker
+    arch: aarch64
+    autoActivate: true
+    forwardAgent: false
+    network:
+      address: true
+      dns: []
+    docker: {}
+  '';
 
   home.stateVersion = "25.11";
 }
