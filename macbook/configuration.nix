@@ -7,6 +7,11 @@
     trusted-users = [ "acmyers" ];
   };
 
+  # Allow EOL lima (colima dependency, nixpkgs hasn't updated yet)
+  nixpkgs.config.permittedInsecurePackages = [
+    "lima-full-1.2.2"
+  ];
+
   # System packages (available to all users)
   environment.systemPackages = with pkgs; [
     helix
