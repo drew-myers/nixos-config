@@ -35,13 +35,11 @@
     gnupg
     nix-output-monitor
     btop
-
-    # terminal
-    ghostty
   ];
 
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     matchBlocks = {
       "github.com" = {
         hostname = "github.com";
@@ -53,8 +51,10 @@
 
   programs.git = {
     enable = true;
-    userName = "Drew Myers";
-    userEmail = "drew.myers@close.com";
+    settings.user = {
+      name = "Drew Myers";
+      email = "drew@drewmyers.dev";
+    };
   };
 
   programs = {
