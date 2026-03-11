@@ -2,7 +2,7 @@
 
 {
   home.username = "acmyers";
-  home.homeDirectory = "/Users/acmyers";
+  home.homeDirectory = lib.mkForce "/Users/acmyers";
 
   home.packages = with pkgs; [
     # archives
