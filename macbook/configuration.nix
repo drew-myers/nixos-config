@@ -27,6 +27,9 @@
     options = "--delete-older-than 30d";
   };
 
+  # Touch ID for sudo
+  security.pam.services.sudo_local.touchIdAuth = true;
+
   # Remap caps lock to escape
   system.keyboard = {
     enableKeyMapping = true;
