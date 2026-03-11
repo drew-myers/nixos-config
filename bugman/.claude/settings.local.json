@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:earendil-works.github.io)",
+      "WebFetch(domain:search.nixos.org)",
+      "Bash(nix eval:*)",
+      "WebSearch",
+      "Read(//tmp/**)",
+      "Bash(npx @earendil-works/gondolin --help)",
+      "WebFetch(domain:hermes-agent.nousresearch.com)",
+      "Bash(ssh bugman.lan \"python3 --version 2>/dev/null; which python3 2>/dev/null; uname -m; ls ~/.hermes 2>/dev/null || echo 'no .hermes dir'; ls ~/.local/bin/hermes 2>/dev/null || echo 'hermes not installed'\")",
+      "Bash(ssh bugman.lan \"cat /etc/os-release | head -5; which uv 2>/dev/null || echo 'no uv'; which node 2>/dev/null || echo 'no node'; which gcc 2>/dev/null || echo 'no gcc'; cat /etc/nix-ld.conf 2>/dev/null || echo 'no nix-ld config'; ls /lib/ld-linux* 2>/dev/null || echo 'no standard ld'; nixos-option programs.nix-ld.enable 2>/dev/null || echo 'cant check nix-ld'\")",
+      "Bash(ssh bugman.lan \"curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash\")"
+    ]
+  }
+}

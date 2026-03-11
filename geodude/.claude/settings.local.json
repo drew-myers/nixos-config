@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh acmyers@192.168.50.222 \"ip link show && echo ''---'' && lspci | grep -i ethernet\")",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -73,6 +73,9 @@
     flake = "/etc/nixos";
   };
 
+  # Enable nix-ld so dynamically linked binaries (uv, Python from uv, etc.) work
+  programs.nix-ld.enable = true;
+
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
@@ -80,6 +83,8 @@
   #   wget
       helix
       git
+      gcc
+      ffmpeg
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

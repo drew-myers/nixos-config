@@ -46,7 +46,6 @@
     };
     finder = {
       AppleShowAllExtensions = true;
-      FHIDeExtensionChangeWarning = false;
     };
   };
 
