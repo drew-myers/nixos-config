@@ -37,6 +37,7 @@
     gawk
     zstd
     gnupg
+    git-crypt
 
 
     btop  # replacement of htop/nmon
@@ -44,6 +45,17 @@
   ];
 
   programs = {
+    ssh = {
+      enable = true;
+      matchBlocks = {
+        "github.com" = {
+          hostname = "github.com";
+          identityFile = "~/.ssh/github_ed25519";
+          identitiesOnly = true;
+        };
+      };
+    };
+
     nushell = {
         enable = true;
 
@@ -72,6 +84,7 @@
          $env.PATH = ($env.PATH | 
          split row (char esep) |
          prepend /home/acmyers/.apps |
+         prepend /home/acmyers/.local/bin |
          append /usr/bin/env |
          append /home/acmyers/bin
          )
