@@ -13,8 +13,8 @@
     git
   ];
 
-  # Enable nix-daemon (required on macOS)
-  services.nix-daemon.enable = true;
+  # Primary user for system defaults
+  system.primaryUser = "acmyers";
 
   # Set default shell to nushell
   # (you'll still need to add it to /etc/shells and chsh manually once)
