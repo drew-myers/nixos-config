@@ -95,7 +95,7 @@
         vim = "hx";
         nano = "hx";
         lg = "lazygit";
-        drs = "darwin-rebuild switch --flake ~/nixos-config/macbook";
+        drs = "sudo darwin-rebuild switch --flake ~/nixos-config/macbook";
       };
     };
     carapace.enable = true;
