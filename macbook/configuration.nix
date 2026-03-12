@@ -65,8 +65,7 @@
       "docker-compose"
     ];
     casks = [
-      # GUI apps that aren't in nixpkgs go here
-      # "ghostty"
+      "chromium"
     ];
   };
 
