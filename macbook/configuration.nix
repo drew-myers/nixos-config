@@ -59,6 +59,9 @@
       autoUpdate = true;
       cleanup = "zap"; # remove anything not declared here
     };
+    taps = [
+      "nikitabobko/tap"
+    ];
     brews = [
       "colima"
       "docker"
@@ -66,7 +69,7 @@
     ];
     casks = [
       "1password"
-      "aerospace"
+      "nikitabobko/tap/aerospace"
       "firefox"
       "slack"
       "zoom"
