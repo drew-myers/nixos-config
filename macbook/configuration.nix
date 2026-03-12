@@ -65,6 +65,7 @@
       "docker-compose"
     ];
     casks = [
+      "1password"
       "firefox"
       "slack"
     ];
