@@ -66,6 +66,7 @@
     ];
     casks = [
       "firefox"
+      "slack"
     ];
   };
 
