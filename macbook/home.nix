@@ -283,14 +283,6 @@
     r = ['reload-config', 'mode main']
     esc = 'mode main'
 
-    # App workspace assignments
-    [[on-window-detected]]
-    if.app-id = 'com.tinyspeck.slackmacgap'
-    run = 'move-node-to-workspace 3'
-
-    [[on-window-detected]]
-    if.app-id = 'us.zoom.xos'
-    run = 'move-node-to-workspace 4'
   '';
 
   home.stateVersion = "25.11";
