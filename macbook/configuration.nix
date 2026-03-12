@@ -52,6 +52,24 @@
     };
   };
 
+  # Declarative homebrew — nix-darwin runs brew bundle for you
+  homebrew = {
+    enable = true;
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "zap"; # remove anything not declared here
+    };
+    brews = [
+      "colima"
+      "docker"
+      "docker-compose"
+    ];
+    casks = [
+      # GUI apps that aren't in nixpkgs go here
+      # "ghostty"
+    ];
+  };
+
   # Used for backwards compat — don't change
   system.stateVersion = 6;
 }
