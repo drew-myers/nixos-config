@@ -65,7 +65,7 @@
       "docker-compose"
     ];
     casks = [
-      "chromium"
+      "eloston-chromium"
     ];
   };
 
