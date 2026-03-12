@@ -66,8 +66,10 @@
     ];
     casks = [
       "1password"
+      "aerospace"
       "firefox"
       "slack"
+      "zoom"
     ];
   };
 
