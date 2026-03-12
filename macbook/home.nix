@@ -201,7 +201,7 @@
 
   # AeroSpace tiling window manager config
   home.file.".aerospace.toml".text = ''
-    start-at-login = true
+    start-at-login = false
     after-login-command = []
     after-startup-command = []
 
