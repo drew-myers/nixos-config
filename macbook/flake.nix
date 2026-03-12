@@ -11,12 +11,9 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    colima = {
-      url = "github:abiosoft/colima";
-    };
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, colima, ... }: {
+  outputs = { self, nixpkgs, nix-darwin, home-manager, ... }: {
     darwinConfigurations."Drews-MacBook-Pro" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [
@@ -26,9 +23,6 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.acmyers = import ./home.nix;
-          home-manager.extraSpecialArgs = {
-            inherit colima;
-          };
         }
       ];
     };
