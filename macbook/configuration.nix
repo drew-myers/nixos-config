@@ -65,7 +65,7 @@
       "docker-compose"
     ];
     casks = [
-      "eloston-chromium"
+      "firefox"
     ];
   };
 
