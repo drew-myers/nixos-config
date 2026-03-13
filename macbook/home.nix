@@ -137,10 +137,14 @@
         let carapace_completer = {|spans|
         carapace $spans.0 nushell ...$spans | from json
         }
-        $env.config = {
+         $env.EDITOR = "hx"
+         $env.config = {
           show_banner: false,
           edit_mode: "vi",
           buffer_editor: "vi",
+          table: {
+            mode: "light"
+          }
           completions: {
             case_sensitive: false
             quick: true
@@ -153,6 +157,47 @@
             }
           }
         }
+        # Work-specific config (managed by work.private.nix)
+        source ~/.config/nushell/work.nu
+
+        # Enable 1Password biometric unlock for CLI
+        $env.OP_BIOMETRIC_UNLOCK_ENABLED = "true"
+
+        # Load secrets from 1Password with caching
+        # First terminal: op inject + Touch ID, writes cache
+        # Subsequent terminals: reads cache, no prompt
+        # Cache lives in $TMPDIR (per-user, cleared on reboot)
+        let secrets_cache = $"($env.TMPDIR? | default '/tmp')/op-secrets-cache"
+        let secrets_tpl = $"($env.HOME)/.config/secrets.env.tpl"
+        let max_age = 12 * 60 * 60  # 12 hours in seconds
+
+        let use_cache = ($secrets_cache | path exists) and (
+          (date now) - (ls -l $secrets_cache | get 0.modified) | into int
+        ) < ($max_age * 1_000_000_000)
+
+        let secrets_raw = if $use_cache {
+          open $secrets_cache
+        } else {
+          try {
+            let result = /opt/homebrew/bin/op inject -i $secrets_tpl --account $env.OP_ACCOUNT
+            $result | save -f $secrets_cache
+            chmod 600 $secrets_cache
+            $result
+          } catch {
+            ""
+          }
+        }
+
+        if ($secrets_raw | str trim) != "" {
+          $secrets_raw | lines
+            | where ($it | str trim) != ""
+            | parse "{key}={value}"
+            | reduce -f {} {|it, acc| $acc | insert $it.key $it.value}
+            | load-env
+        }
+
+        alias fg = job unfreeze
+
         $env.PATH = ($env.PATH |
         split row (char esep) |
         prepend /opt/homebrew/bin |
