@@ -69,8 +69,11 @@
     ];
     casks = [
       "1password"
+      "1password-cli"
+      "ghostty"
       "nikitabobko/tap/aerospace"
       "firefox"
+      "notion"
       "slack"
       "zoom"
     ];
