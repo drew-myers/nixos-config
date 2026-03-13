@@ -35,6 +35,7 @@
     gnupg
     nix-output-monitor
     btop
+    nodejs_22
   ];
 
   programs.ssh = {
