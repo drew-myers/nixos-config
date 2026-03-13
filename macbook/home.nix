@@ -205,8 +205,13 @@
         prepend /run/current-system/sw/bin |
         prepend /Users/acmyers/.npm-global/bin |
         prepend /Users/acmyers/.local/bin |
+        prepend /Users/acmyers/bin |
+        append /usr/local/bin |
         append /usr/bin/env
         )
+
+        # Source agent env
+        source /Users/acmyers/.agent-env.nu
       '';
 
       shellAliases = {
