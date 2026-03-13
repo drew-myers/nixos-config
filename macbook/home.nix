@@ -16,8 +16,6 @@
     jq
     yq-go
     fzf
-    lazygit
-
     # networking
     mtr
     iperf3
@@ -37,6 +35,8 @@
     btop
     nodejs_22
     nerd-fonts.jetbrains-mono
+    delta
+    difftastic
   ];
 
   programs.ssh = {
@@ -233,6 +233,18 @@
           success_symbol = "[➜](bold green)";
           error_symbol = "[➜](bold red)";
         };
+      };
+    };
+  };
+
+  programs.lazygit = {
+    enable = true;
+    settings = {
+      git = {
+        pagers = [
+          { externalDiffCommand = "difft --color=always --display=inline"; }
+          { pager = "delta --dark --paging=never"; }
+        ];
       };
     };
   };
