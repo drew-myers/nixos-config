@@ -36,6 +36,7 @@
     nix-output-monitor
     btop
     nodejs_22
+    nerd-fonts.jetbrains-mono
   ];
 
   programs.ssh = {
@@ -185,6 +186,114 @@
       };
     };
   };
+
+  xdg.configFile."ghostty/config".text = ''
+    theme = Everblush
+    keybind = shift+enter=text:\n
+    command = ${pkgs.nushell}/bin/nu
+    font-family = "JetBrainsMono Nerd Font Mono"
+    font-size = 14
+    font-thicken = true
+    font-thicken-strength = 0
+  '';
+
+  programs.helix = {
+    enable = true;
+    settings = {
+      theme = "adwaita-dark";
+      editor = {
+        line-number = "relative";
+        bufferline = "multiple";
+        file-picker = {
+          git-ignore = false;
+        };
+      };
+    };
+    languages = {
+      language-server.pyright = {
+        command = "pyright-langserver";
+        args = [ "--stdio" ];
+      };
+      language-server.ruff = {
+        command = "ruff";
+        args = [ "server" ];
+      };
+      language = [{
+        name = "python";
+        language-servers = [ "pyright" "ruff" ];
+        formatter = { command = "ruff"; args = [ "format" "-" ]; };
+      }];
+    };
+  };
+
+  xdg.configFile."helix/ignore".text = ''
+    config/app.py
+    venv
+    .venv
+    shell-venv
+    src
+    .python-version
+    .closeio_maintenance_flag
+    .cache
+    .pytest_cache
+    *.py[co]
+    .mypy_cache
+    .dmypy.json
+    .ropeproject
+    .idea
+    .dir-locals.el
+    .hypothesis
+    .ruff_cache
+    .envrc
+    pyrightconfig.json
+
+    dump.rdb
+
+    release.txt
+
+    CLAUDE.local.md
+    .claude/settings.local.json
+
+    # Packages
+    *.egg
+    *.egg-info
+    eggs
+    parts
+    var
+    sdist
+    develop-eggs
+    .installed.cfg
+
+    # Installer logs
+    build/
+    pip-log.txt
+    npm-debug.log
+
+    # Unit test / coverage reports
+    nosetests.xml
+    .coverage
+    .tox
+
+    #Translations
+    *.mo
+
+    #Mr Developer
+    .mr.developer.cfg
+
+    # Vim
+    *.swp
+
+    # Finder
+    .DS_Store
+
+    .vscode
+
+    # When working with org_stats
+    /org_stats.csv
+    /pipeline_stats.csv
+
+    config/localhost/local.*
+  '';
 
   # Colima default VM profile
   home.file.".colima/default/colima.yaml".text = ''
