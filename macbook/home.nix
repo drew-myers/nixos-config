@@ -157,6 +157,7 @@
         prepend /opt/homebrew/bin |
         prepend /etc/profiles/per-user/acmyers/bin |
         prepend /run/current-system/sw/bin |
+        prepend /Users/acmyers/.npm-global/bin |
         prepend /Users/acmyers/.local/bin |
         append /usr/bin/env
         )
