@@ -22,7 +22,12 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.acmyers = import ./home.nix;
+          home-manager.users.acmyers = { ... }: {
+            imports = [
+              ./home.nix
+              ./macbook.private.nix
+            ];
+          };
         }
       ];
     };
