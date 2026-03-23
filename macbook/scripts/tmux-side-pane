@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Toggle a named side pane (term|agent) on the right.
+# - If target is already showing: close it
+# - If other is showing: swap to target
+# - If nothing: open target
+set -e
+TARGET="$1"
+
+SHOWING=$(tmux show -wqv @side 2>/dev/null || true)
+PANES=$(tmux list-panes | wc -l | tr -d ' ')
+
+# Side pane is open
+if [ "$PANES" -gt 1 ]; then
+  if [ "$SHOWING" = "$TARGET" ]; then
+    # Toggle off: stash pane in a hidden window, focus editor
+    tmux break-pane -d -s :.2 -n "_${TARGET}"
+    tmux set -w @side ""
+    tmux select-pane -t :.1
+    exit 0
+  fi
+  # Different pane showing: stash it first
+  if [ -n "$SHOWING" ]; then
+    tmux break-pane -d -s :.2 -n "_${SHOWING}"
+  else
+    tmux break-pane -d -s :.2
+  fi
+fi
+
+# Restore from hidden window if it exists, otherwise create fresh
+if tmux list-windows -F '#{window_name}' | grep -qx "_${TARGET}"; then
+  tmux join-pane -h -s "_${TARGET}.1" -l 40%
+else
+  tmux split-window -h -l 40% -c "#{pane_current_path}"
+  [ "$TARGET" = "agent" ] && tmux send-keys "pi" Enter
+fi
+
+tmux set -w @side "$TARGET"
+tmux select-pane -t :.2

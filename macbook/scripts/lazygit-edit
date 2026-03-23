@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Context-aware editor for lazygit.
+# If helix is running in pane 1, send :open to it.
+# Otherwise, open helix in a new tmux split.
+FILENAME="$1"
+LINE="$2"
+
+PANE1_CMD=$(tmux display-message -t :.1 -p '#{pane_current_command}' 2>/dev/null || echo "")
+
+if [ "$PANE1_CMD" = "hx" ]; then
+  # Helix is running — send :open to it
+  if [ -n "$LINE" ]; then
+    tmux send-keys -t :.1 ":open ${FILENAME}:${LINE}" Enter
+  else
+    tmux send-keys -t :.1 ":open ${FILENAME}" Enter
+  fi
+else
+  # No helix — open in a split, wait for it to close
+  if [ -n "$LINE" ]; then
+    tmux split-window -h -c "#{pane_current_path}" "hx +${LINE} ${FILENAME}"
+  else
+    tmux split-window -h -c "#{pane_current_path}" "hx ${FILENAME}"
+  fi
+fi

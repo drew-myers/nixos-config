@@ -11,6 +11,7 @@
   environment.systemPackages = with pkgs; [
     helix
     git
+    yubikey-manager
   ];
 
   # Primary user for system defaults
@@ -27,8 +28,16 @@
     options = "--delete-older-than 30d";
   };
 
-  # Touch ID for sudo
-  security.pam.services.sudo_local.touchIdAuth = true;
+  # YubiKey U2F + Touch ID for sudo
+  security.pam.services.sudo_local = {
+    enable = true;
+    text = ''
+      auth       optional       ${pkgs.pam-reattach}/lib/pam/pam_reattach.so
+      auth       sufficient     ${pkgs.pam_u2f}/lib/security/pam_u2f.so cue [cue_prompt=🔑 Tap YubiKey...]
+      auth       sufficient     pam_tid.so
+      auth       required       pam_opendirectory.so
+    '';
+  };
 
   # Remap caps lock to escape
   system.keyboard = {
@@ -57,7 +66,7 @@
     enable = true;
     onActivation = {
       autoUpdate = true;
-      cleanup = "zap"; # remove anything not declared here
+      cleanup = "zap";
     };
     taps = [
       "nikitabobko/tap"
@@ -66,6 +75,12 @@
       "colima"
       "docker"
       "docker-compose"
+      "awscli"
+      "gh"
+      "gnu-tar"
+      "python3"
+      "pam-u2f"
+      "bat"
     ];
     casks = [
       "1password"

@@ -37,11 +37,19 @@
     nerd-fonts.jetbrains-mono
     delta
     difftastic
+    pyright
+    ruff
+
+    # rust dev tools
+    cargo-watch
+    cargo-edit
+    cargo-nextest
   ];
 
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
+    includes = [ "config.d/*" ];
     matchBlocks = {
       "github.com" = {
         hostname = "github.com";
@@ -98,6 +106,15 @@
 
       # New windows keep current path
       bind c new-window -c "#{pane_current_path}"
+
+      # Side pane toggles (editor always on left)
+      bind e select-pane -t :.1
+      bind t run-shell "~/.local/bin/tmux-side-pane term"
+      bind a run-shell "~/.local/bin/tmux-side-pane agent"
+
+      # Floating popups
+      bind g display-popup -E -w 90% -h 90% -d "#{pane_current_path}" "lazygit"
+      bind B display-popup -E -w 90% -h 90% -d "#{pane_current_path}" "btop"
 
       # Quick reload
       bind r source-file ~/.config/tmux/tmux.conf \; display "Reloaded"
@@ -197,6 +214,14 @@
         }
 
         alias fg = job unfreeze
+        alias enix = hx ~/nixos-config/macbook/home.nix
+        alias gnix = cd ~/nixos-config/macbook
+
+        def drs [] {
+          sudo darwin-rebuild switch --flake ~/nixos-config/macbook
+          sleep 2sec
+          launchctl kickstart -k $"gui/(id -u)/com.apple.Dock.agent"
+        }
 
         $env.PATH = ($env.PATH |
         split row (char esep) |
@@ -205,6 +230,7 @@
         prepend /run/current-system/sw/bin |
         prepend /Users/acmyers/.npm-global/bin |
         prepend /Users/acmyers/.local/bin |
+        prepend /Users/acmyers/.cargo/bin |
         prepend /Users/acmyers/bin |
         append /usr/local/bin |
         append /usr/bin/env
@@ -212,14 +238,41 @@
 
         # Source agent env
         source /Users/acmyers/.agent-env.nu
+
+       def fao [
+         pattern: string
+         cmd: string
+         --xargs(-x)
+         --line(-l)
+       ] {
+         if $line {
+           let result = (rg -n $pattern
+             | fzf --delimiter ':' --preview 'bat --color=always --highlight-line {2} {1}'
+           )
+           if ($result | is-empty) { return }
+           let parts = ($result | split column ':')
+           let file = ($parts | get column1.0)
+           let ln = ($parts | get column2.0)
+           ^($cmd) $"+($ln)" $file
+         } else {
+           let result = (rg -l $pattern | fzf --preview $"bat --color=always {}")
+           if ($result | is-empty) { return }
+           if $xargs {
+             echo $result | xargs $cmd
+           } else {
+             echo $result | ($cmd)
+           }
+         }
+       }
+
       '';
 
       shellAliases = {
+        hx = "/Users/acmyers/dev/helix/target/release/hx";
         vi = "hx";
         vim = "hx";
         nano = "hx";
         lg = "lazygit";
-        drs = "sudo darwin-rebuild switch --flake ~/nixos-config/macbook";
       };
     };
     carapace.enable = true;
@@ -240,6 +293,11 @@
   programs.lazygit = {
     enable = true;
     settings = {
+      os = {
+        edit = "~/.local/bin/lazygit-edit {{filename}}";
+        editAtLine = "~/.local/bin/lazygit-edit {{filename}} {{line}}";
+        editInTerminal = false;
+      };
       git = {
         pagers = [
           { externalDiffCommand = "difft --color=always --display=inline"; }
@@ -280,11 +338,19 @@
         command = "ruff";
         args = [ "server" ];
       };
-      language = [{
-        name = "python";
-        language-servers = [ "pyright" "ruff" ];
-        formatter = { command = "ruff"; args = [ "format" "-" ]; };
-      }];
+      language = [
+        {
+          name = "python";
+          auto-format = true;
+          language-servers = [ "pyright" "ruff" ];
+          formatter = { command = "ruff"; args = [ "format" "-" ]; };
+        }
+        {
+          name = "rust";
+          auto-format = true;
+          language-servers = [ "rust-analyzer" ];
+        }
+      ];
     };
   };
 
@@ -357,20 +423,21 @@
     config/localhost/local.*
   '';
 
-  # Colima default VM profile
-  home.file.".colima/default/colima.yaml".text = ''
-    cpu: 8
-    memory: 16
-    disk: 60
-    runtime: docker
-    arch: aarch64
-    autoActivate: true
-    forwardAgent: false
-    network:
-      address: true
-      dns: []
-    docker: {}
-  '';
+
+
+  # Scripts
+  home.file.".local/bin/tmux-side-pane" = {
+    source = ./scripts/tmux-side-pane;
+    executable = true;
+  };
+  home.file.".local/bin/lazygit-edit" = {
+    source = ./scripts/lazygit-edit;
+    executable = true;
+  };
+
+  # Docker CLI plugin symlinks
+  home.file.".docker/cli-plugins/docker-compose".source =
+    config.lib.file.mkOutOfStoreSymlink "/opt/homebrew/bin/docker-compose";
 
   # AeroSpace tiling window manager config
   home.file.".aerospace.toml".text = ''
